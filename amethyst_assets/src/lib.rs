@@ -32,6 +32,9 @@ extern crate shred_derive;
 #[cfg(feature = "profiler")]
 extern crate thread_profiler;
 
+#[cfg(target_os = "android")]
+extern crate android_glue;
+
 pub use asset::{Asset, Format, FormatValue, SimpleFormat};
 pub use cache::Cache;
 pub use error::{Error, ErrorKind, Result, ResultExt};

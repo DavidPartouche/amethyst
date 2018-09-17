@@ -4,6 +4,11 @@ use std::path::{Path, PathBuf};
 use std::time::UNIX_EPOCH;
 use {ErrorKind, Result, ResultExt};
 
+#[cfg(target_os = "android")]
+use android_glue::{load_asset, AssetError};
+#[cfg(target_os = "android")]
+use error::Error;
+
 /// Directory source.
 ///
 /// Please note that there is a default directory source
@@ -33,6 +38,7 @@ impl Directory {
 }
 
 impl Source for Directory {
+    #[cfg(not(target_os = "android"))]
     fn modified(&self, path: &str) -> Result<u64> {
         #[cfg(feature = "profiler")]
         profile_scope!("dir_modified_asset");
@@ -49,6 +55,13 @@ impl Source for Directory {
             .as_secs())
     }
 
+    #[cfg(target_os = "android")]
+    // Quick hack to make the image draw to Android, need to be properly implemented
+    fn modified(&self, path: &str) -> Result<u64> {
+        Ok(0)
+    }
+
+    #[cfg(not(target_os = "android"))]
     fn load(&self, path: &str) -> Result<Vec<u8>> {
         #[cfg(feature = "profiler")]
         profile_scope!("dir_load_asset");
@@ -65,6 +78,21 @@ impl Source for Directory {
             .chain_err(|| ErrorKind::Source)?;
 
         Ok(v)
+    }
+
+    #[cfg(target_os = "android")]
+    fn load(&self, path: &str) -> Result<Vec<u8>> {
+        #[cfg(feature = "profiler")]
+        profile_scope!("dir_load_asset");
+
+        load_asset(path).map_err(|e| match e {
+            AssetError::AssetMissing => {
+                Error::from_kind(ErrorKind::Msg(format!("Failed to open file {}", path)))
+            }
+            AssetError::EmptyBuffer => {
+                Error::from_kind(ErrorKind::Msg(format!("Failed to read file {}", path)))
+            }
+        })
     }
 }
 

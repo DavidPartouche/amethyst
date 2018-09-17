@@ -34,6 +34,7 @@ shred = { version = "0.7" }
 shred-derive = { version = "0.5" }
 ron = "0.4"
 thread_profiler = { version = "0.3", optional = true }
+android_glue = "0.2.3"
 
 [dev-dependencies]
 
