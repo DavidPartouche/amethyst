@@ -19,6 +19,7 @@ travis-ci = { repository = "amethyst/amethyst" }
 ron = "0.4"
 serde = "1.0"
 log = "0.4"
+android_glue = "0.2.3"
 
 thread_profiler = { version = "0.3", optional = true }
 

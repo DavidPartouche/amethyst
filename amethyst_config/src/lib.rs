@@ -9,6 +9,9 @@ extern crate log;
 extern crate ron;
 extern crate serde;
 
+#[cfg(target_os = "android")]
+extern crate android_glue;
+
 #[cfg(feature = "profiler")]
 extern crate thread_profiler;
 
@@ -127,17 +130,24 @@ where
 
     fn load_no_fallback<P: AsRef<Path>>(path: P) -> Result<Self, ConfigError> {
         use ron::de::Deserializer;
-        use std::fs::File;
-        use std::io::Read;
 
         let path = path.as_ref();
 
+        #[cfg(not(target_os = "android"))]
         let content = {
+            use std::fs::File;
+            use std::io::Read;
             let mut file = File::open(path)?;
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer)?;
 
             buffer
+        };
+
+        #[cfg(target_os = "android")]
+        let content: Vec<u8> = {
+            use android_glue;
+            android_glue::load_asset(path.to_str().unwrap()).unwrap_or_else(|_| Vec::new())
         };
 
         if path.extension().and_then(|e| e.to_str()) == Some("ron") {
