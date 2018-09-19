@@ -1,8 +1,12 @@
 use source::Source;
+#[cfg(not(target_os = "android"))]
 use std::fs::File;
 use std::path::{Path, PathBuf};
+#[cfg(not(target_os = "android"))]
 use std::time::UNIX_EPOCH;
-use {ErrorKind, Result, ResultExt};
+#[cfg(not(target_os = "android"))]
+use ResultExt;
+use {ErrorKind, Result};
 
 #[cfg(target_os = "android")]
 use android_glue::{load_asset, AssetError};
@@ -56,8 +60,8 @@ impl Source for Directory {
     }
 
     #[cfg(target_os = "android")]
-    // Quick hack to make the image draw to Android, need to be properly implemented
-    fn modified(&self, path: &str) -> Result<u64> {
+    // TODO: Quick hack to make the image draw to Android, need to be properly implemented
+    fn modified(&self, _path: &str) -> Result<u64> {
         Ok(0)
     }
 
