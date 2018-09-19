@@ -13,11 +13,6 @@ use android_glue::{load_asset, AssetError};
 #[cfg(target_os = "android")]
 use error::Error;
 
-#[cfg(target_os = "android")]
-use android_glue::{load_asset, AssetError};
-#[cfg(target_os = "android")]
-use error::Error;
-
 /// Directory source.
 ///
 /// Please note that there is a default directory source
